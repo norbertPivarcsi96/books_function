@@ -14,6 +14,33 @@ function insertDatabase($newBook, $conn) {
   return $addNewBook;
 }
 
+
+function editBook($connection) {
+  if (isset($_GET['edit_leiras']) && isset($_GET['edit_id'])) {
+    $edit = $_GET['edit_leiras'];
+    $id = $_GET['edit_id'];
+    $edit_book_query = $conn->query("UPDATE books SET leírás = '$edit' WHERE id = $id");
+
+      return $edit_book_query;
+    if ($edit_book_query) {
+      echo "Sikeres módosítás";
+    }else {
+      echo "Sikertelen módosítás";
+    }
+  }
+}
+function deleteBook($conn) {
+  if (isset($_GET['delete_film'])) {
+      $unsetData = $_GET['delete_film'];
+      $delete_filmSQL = $conn->query("DELETE FROM filmek WHERE id = $unsetData");
+      if ($delete_filmSQL) {
+        echo "Sikeres törlés";
+      }else {
+        echo "Valami hiba történ, kérjük keresse fel vevőszolgálatukat";
+      }
+  }
+}
+
 function connectionToDatabase() {
   $host = "127.0.0.1";
   $database = "books";
@@ -50,8 +77,22 @@ if (isset($_POST['iro']) && isset($_POST['cim']) && isset($_POST['leiras'])) {
 while ($row = $booksListing->fetch_assoc()) {
   echo "Iro: ".$row['iro']."<br>";
   echo "Cím: ".$row['cim']."<br>";
-  echo "Leírás: ".$row['leiras']."<br><br>";
-  echo "<a href=?edit_book_leiras=".$row['id'].">Leírás szerkesztése</a>";
+  echo "Leírás: ".$row['leiras']."<br>";
+  echo "<a href=?edit_book_leiras=".$row['id'].">Leírás szerkesztése</a>"."<br>";
+  echo "<a href=?delete_book=".$row['id'].">Könyv törlése</a>"."<br><br>";
+
+  if (isset($_GET['edit_book_leiras'])) {
+    if ($_GET['edit_book_leiras'] == $row['id']) {
+      ?>
+      <form class="" method="get">
+        <input type="hidden" name="edit_id" value="<?php echo $row['id']?>">
+        <input type="text" name="edit_leiras" value="<?php echo $row['leiras']?>"><br>
+        <input type="submit" name="submit" value="Módosítás">
+      </form>
+      <?php
+    }
+
+  }
 }
 
 ?>
